@@ -1,0 +1,13 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/rps-engine-client-dotnet/v16
+/.vs
+/Client/bin
+/Client/obj
+*.vspscc
+/Examples/bin/Debug/netcoreapp3.1
+/Examples/obj
+/NetCore/bin/Debug/netcoreapp3.1
+/NetCore/obj
