@@ -10,6 +10,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Version>3.10.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
