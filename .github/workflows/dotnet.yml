@@ -1,5 +1,18 @@
 name: .NET
 
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+  # GitHub Packages Feed settings
+  GITHUB_FEED: https://nuget.pkg.github.com/regdatasa/
+  GITHUB_USER: regdatasa
+  GITHUB_TOKEN: ${{ secrets.REGDATASA_TOKEN }}
+
+  # Official NuGet Feed settings
+  NUGET_FEED: https://api.nuget.org/v3/index.json
+  NUGET_KEY: ${{ secrets.NUGET_API_KEY }}
+
 on:
   release:
     types:
@@ -28,8 +41,32 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
 
-    - name: Build Regdata.RPS.Engine.Client
-      run: dotnet build --configuration Release --no-restore /p:Version=${{ steps.vars.outputs.version }} ./Client/Regdata.RPS.Engine.Client.csproj
+    - name: Pack Regdata.RPS.Engine.Client
+      run: dotnet pack -v normal --no-restore -c Release -p:PackageVersion=${{ steps.vars.outputs.version }} -o nupkg ./Client/Regdata.RPS.Engine.Client.csproj
 
-    - name: Build Regdata.RPS.Engine.Client.NetCore
-      run: dotnet build --configuration Release --no-restore /p:Version=${{ steps.vars.outputs.version }} ./Client/Regdata.RPS.Engine.Client.NetCore.csproj
+    - name: Pack Regdata.RPS.Engine.Client.NetCore
+      run: dotnet pack -v normal --no-restore -c Release -p:PackageVersion=${{ steps.vars.outputs.version }} -o nupkg ./NetCore/Regdata.RPS.Engine.Client.NetCore.csproj
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: nupkg
+        path: ./nupkg/*.nupkg
+
+  deploy:
+    needs: build
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download Artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: nupkg
+    - name: Push to GitHub Feed
+      run: |
+        for f in ./nupkg/*.nupkg
+        do
+          curl -vX PUT -u "$GITHUB_USER:$GITHUB_TOKEN" -F package=@$f $GITHUB_FEED
+        done
+    - name: Push to NuGet Feed
+      run: dotnet nuget push ./nupkg/*.nupkg --source $NUGET_FEED --skip-duplicate --api-key $NUGET_KEY
