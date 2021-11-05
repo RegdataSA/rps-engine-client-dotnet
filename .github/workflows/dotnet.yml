@@ -6,7 +6,6 @@ env:
 
   # GitHub Packages Feed settings
   GITHUB_USER: regdatasa
-  GITHUB_TOKEN: ${{ secrets.REGDATASA_TOKEN }}
 
   # Official NuGet Feed settings
   NUGET_FEED: https://api.nuget.org/v3/index.json
@@ -67,6 +66,6 @@ jobs:
         nupkg-path: './*.nupkg'
         repo-owner: ${{ env.GITHUB_USER }}
         gh-user: ${{ env.GITHUB_USER }}
-        token: ${{ env.GITHUB_TOKEN }}
+        token: ${{ secrets.GITHUB_TOKEN }}
     - name: Push to NuGet Feed
       run: dotnet nuget push ./*.nupkg --source $NUGET_FEED --skip-duplicate --api-key $NUGET_KEY
