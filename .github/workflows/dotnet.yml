@@ -9,21 +9,31 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
-
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
     steps:
     - uses: actions/checkout@v2
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.x
+
+    - name: Set variables
+      id: vars
+      run: | 
+        arrTag=(${GITHUB_REF//\// })
+        VERSION="${arrTag[2]}"
+        VERSION="${VERSION//v}"
+        echo ::set-output name=version::${VERSION}
+
     - name: Restore dependencies
       run: dotnet restore
+
     - name: Build Regdata.RPS.Engine.Client
-      run: dotnet build --configuration Release --no-restore ./Client/Regdata.RPS.Engine.Client.csproj
-    - name: Build Regdata.RPS.Engine.Client NuGet
-      id: publish_nuget
-      uses: rohith/publish-nuget@v2
-      with:
-        PROJECT_FILE_PATH: ./Client/Regdata.RPS.Engine.Client.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+      run: dotnet build --configuration Release --no-restore /p:Version=${{ steps.vars.outputs.version }} ./Client/Regdata.RPS.Engine.Client.csproj
+
+    - name: Build Regdata.RPS.Engine.Client.NetCore
+      run: dotnet build --configuration Release --no-restore /p:Version=${{ steps.vars.outputs.version }} ./Client/Regdata.RPS.Engine.Client.NetCore.csproj
