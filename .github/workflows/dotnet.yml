@@ -1,6 +1,7 @@
 name: .NET
 
 on:
+  push:
   release:
     types:
       - published
@@ -18,5 +19,11 @@ jobs:
         dotnet-version: 3.1.x
     - name: Restore dependencies
       run: dotnet restore
-    - name: Build
-      run: dotnet build --configuration Release --no-restore
+    - name: Build Regdata.RPS.Engine.Client
+      run: dotnet build --configuration Release --no-restore ./Client/Regdata.RPS.Engine.Client.csproj
+    - name: Build Regdata.RPS.Engine.Client NuGet
+      id: publish_nuget
+      uses: rohith/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: ./Client/Regdata.RPS.Engine.Client.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
