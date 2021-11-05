@@ -5,7 +5,7 @@ env:
   DOTNET_CLI_TELEMETRY_OPTOUT: true
 
   # GitHub Packages Feed settings
-  GITHUB_USER: 'regdatasa'
+  GITHUB_USER: regdatasa
   GITHUB_TOKEN: ${{ secrets.REGDATASA_TOKEN }}
 
   # Official NuGet Feed settings
