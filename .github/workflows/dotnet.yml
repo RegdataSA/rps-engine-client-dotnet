@@ -29,9 +29,6 @@ jobs:
       with:
         dotnet-version: 3.1.x
 
-    - name: Install tools
-      run: dotnet tool install gpr -g
-
     - name: Set variables
       id: vars
       run: | 
@@ -60,11 +57,21 @@ jobs:
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
     steps:
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.x
+
+    - name: Install tools
+      run: dotnet tool install gpr -g
+
     - name: Download Artifact
       uses: actions/download-artifact@v2
       with:
         name: nupkg
+
     - name: Push to GitHub Feed
       run: gpr push './*.nupkg' --repository $GITHUB_FEED -k $GITHUB_KEY
+
     - name: Push to NuGet Feed
       run: dotnet nuget push ./*.nupkg --source $NUGET_FEED --skip-duplicate --api-key $NUGET_KEY
