@@ -5,7 +5,8 @@ env:
   DOTNET_CLI_TELEMETRY_OPTOUT: true
 
   # GitHub Packages Feed settings
-  GITHUB_USER: regdatasa
+  GITHUB_FEED: https://nuget.pkg.github.com/regdatasa/index.json
+  GITHUB_KEY: ${{ secrets.PACKAGES_API_KEY }}
 
   # Official NuGet Feed settings
   NUGET_FEED: https://api.nuget.org/v3/index.json
@@ -61,11 +62,6 @@ jobs:
       with:
         name: nupkg
     - name: Push to GitHub Feed
-      uses: tanaka-takayoshi/nuget-publish-to-github-packages-action@v2.1
-      with:
-        nupkg-path: './*.nupkg'
-        repo-owner: ${{ env.GITHUB_USER }}
-        gh-user: ${{ env.GITHUB_USER }}
-        token: ${{ secrets.GITHUB_TOKEN }}
+      run: dotnet nuget push ./*.nupkg --source $GITHUB_FEED --skip-duplicate --api-key $GITHUB_KEY
     - name: Push to NuGet Feed
       run: dotnet nuget push ./*.nupkg --source $NUGET_FEED --skip-duplicate --api-key $NUGET_KEY
