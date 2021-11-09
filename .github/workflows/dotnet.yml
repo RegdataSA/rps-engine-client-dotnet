@@ -5,7 +5,7 @@ env:
   DOTNET_CLI_TELEMETRY_OPTOUT: true
 
   # GitHub Packages Feed settings
-  GITHUB_FEED: https://nuget.pkg.github.com/regdatasa/index.json
+  GITHUB_FEED: RegdataSA/rps-engine-client-dotnet
   GITHUB_KEY: ${{ secrets.PACKAGES_API_KEY }}
 
   # Official NuGet Feed settings
@@ -28,6 +28,9 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.x
+
+    - name: Install tools
+      run: dotnet tool install gpr -g
 
     - name: Set variables
       id: vars
@@ -62,6 +65,6 @@ jobs:
       with:
         name: nupkg
     - name: Push to GitHub Feed
-      run: dotnet nuget push ./*.nupkg --source $GITHUB_FEED --skip-duplicate --api-key $GITHUB_KEY
+      run: gpr push './*.nupkg' --repository $GITHUB_FEED -k $GITHUB_KEY
     - name: Push to NuGet Feed
       run: dotnet nuget push ./*.nupkg --source $NUGET_FEED --skip-duplicate --api-key $NUGET_KEY
