@@ -4,4 +4,6 @@
 
 Regdata RPS Engine Client library (.NET)
 
-The full documentation on RPS Engine Client library (.NET) is available in [RPS Community](https://community.rpsprod.ch/library)
+## RPS Engine Client library documentation
+
+The full documentation is available in [RPS Community](https://community.rpsprod.ch/library)
